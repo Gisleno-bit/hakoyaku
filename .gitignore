@@ -1,0 +1,14 @@
+/target
+**/*.rs.bk
+
+# Configuracion real del usuario: lleva la clave de API dentro.
+# El ejemplo (hakoyaku.example.toml) si se versiona.
+/hakoyaku.toml
+
+# Salidas de `hakoyaku dump`
+*.bmp
+
+.vscode/
+.idea/
+*.swp
+.DS_Store

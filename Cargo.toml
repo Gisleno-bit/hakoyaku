@@ -1,0 +1,41 @@
+[package]
+name = "hakoyaku"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Traductor de texto en pantalla en tiempo real: captura una region, la pasa por OCR y muestra la traduccion en un overlay al lado."
+readme = "README.md"
+keywords = ["ocr", "translation", "overlay", "japanese", "gaming"]
+categories = ["command-line-utilities", "multimedia"]
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4.5", features = ["derive"] }
+env_logger = "0.11"
+log = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+ureq = { version = "2.10", features = ["json"] }
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+    "Foundation",
+    "Foundation_Collections",
+    "Globalization",
+    "Graphics_Imaging",
+    "Media_Ocr",
+    "Storage_Streams",
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_System_LibraryLoader",
+    "Win32_System_WinRT",
+    "Win32_UI_HiDpi",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_UI_WindowsAndMessaging",
+] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+strip = true

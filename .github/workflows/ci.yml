@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # El trabajo que de verdad importa: es el unico que compila la capa Win32
+  # (captura por GDI, Windows.Media.Ocr y la ventana layered).
+  windows:
+    name: Windows — build y tests
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Formato
+        run: cargo fmt --all -- --check
+
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Tests
+        run: cargo test --all-targets
+
+      - name: Build release
+        run: cargo build --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hakoyaku-windows
+          path: target/release/hakoyaku.exe
+
+  # La capa portable (texto, imagen, cache, config, pipeline, backends de
+  # traduccion) no debe depender de Windows. Este trabajo lo garantiza: si
+  # alguien mete logica de negocio dentro de un #[cfg(windows)], aqui se cae.
+  portable:
+    name: Linux — nucleo portable
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Tests
+        run: cargo test --all-targets

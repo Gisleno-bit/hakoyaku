@@ -1,0 +1,219 @@
+# Configuracion de hakoyaku.
+# Todos los valores tienen defecto: puedes borrar lo que no necesites.
+
+# Atajos de teclado globales: funcionan sin salir del juego.
+#
+# Formato: modificadores + tecla, unidos por "+". Vale ctrl, shift, alt, win, y
+# como tecla una letra, un numero, f1..f12, space, tab, esc, enter, supr, inicio,
+# fin, repag, avpag, flechas o tilde. Tambien valen los nombres en castellano
+# (espacio, intro, supr, arriba...).
+#
+# Deja un campo vacio ("") para desactivar ese atajo.
+#
+# Conviene que lleven modificador: una tecla suelta se la come el juego, o se
+# dispara sola al escribir.
+[hotkeys]
+# Quitar la traduccion de en medio para ver el juego limpio, y devolverla.
+# Al devolverla se relee sola, asi que reaparece al momento.
+toggle_overlay = "ctrl+space"
+
+# Dejar de mirar la pantalla. Lo ultimo traducido se queda donde esta.
+pause = "ctrl+alt+p"
+
+# Releer ahora, sin esperar a que cambie el dialogo.
+reread = "ctrl+alt+r"
+
+quit = "ctrl+shift+q"
+
+# A que aplicacion se ancla el traductor.
+[target]
+# Fragmento del titulo de la ventana del juego. Si lo pones, la region de abajo
+# se interpreta RELATIVA a esa ventana: puedes mover o redimensionar el juego y
+# el recuadro le sigue. Vacio = coordenadas absolutas de pantalla.
+# Se rellena solo con la opcion 1 del menu.
+window_title = ""
+
+# No traducir mientras el juego no tenga el foco. Evita que el programa se ponga
+# a leer el navegador que tengas detras.
+only_when_focused = true
+
+# Modo "sigue al raton".
+[cursor]
+# Si esta activado, no se usa la region de abajo: se detecta y traduce la caja
+# que haya bajo el cursor en cada momento. En novelas visuales suele acertar
+# solo, porque el raton esta casi siempre sobre el cuadro de dialogo.
+follow = false
+
+# Zona donde se busca la caja alrededor del cursor. Mas grande detecta cuadros
+# mas anchos, pero cuesta mas por vuelta.
+search_width = 1100
+search_height = 500
+
+# Cuanto tienen que parecerse dos detecciones seguidas (0-100) para tratarlas
+# como la misma caja. Bajalo si no reengancha al mover el raton; subelo si el
+# recuadro tiembla.
+stickiness = 85
+
+# Tolerancia MAXIMA de color al buscar los bordes. Se prueban varias de menor a
+# mayor hasta dar con una caja creible, asi que este numero es un techo y no un
+# ajuste fino: no suele hacer falta tocarlo.
+#
+# Ojo con subirlo mucho: si el fondo del juego es casi tan oscuro como la parte
+# oscura del degradado del cuadro, una tolerancia alta cruza el borde sin
+# enterarse y detecta media pantalla.
+edge_tolerance = 18
+
+# Region que se vigila, en pixeles fisicos.
+# Relativa a la ventana si [target] window_title esta puesto; absoluta si no.
+# La forma comoda de rellenarla es la opcion 1 del menu: pinchas dentro de la
+# caja de dialogo y se detectan los bordes solos.
+[region]
+x = 100
+y = 430
+width = 780
+height = 100
+
+[capture]
+# Cada cuanto se mira la pantalla, en milisegundos.
+# 180 va bien. Bajar de 100 gasta CPU sin ganar casi nada.
+poll_ms = 90
+
+# Cuantas lecturas iguales seguidas hacen falta antes de mandar al OCR.
+# Sirve para no traducir el texto a medias mientras se escribe letra a letra.
+# Si tu juego escribe muy despacio, sube a 3 o 4.
+stable_frames = 2
+
+# Tras mostrar una traduccion, no se vuelve a mirar la pantalla durante este
+# tiempo. Es lo que evita el parpadeo y ahorra llamadas a la API. Subelo si ves
+# que relee de mas; bajalo si tarda en reaccionar al dialogo siguiente.
+cooldown_ms = 150
+
+# Deteccion de cambios. La pantalla se compara por bloques con tolerancia, no
+# pixel a pixel: si no, un fondo con particulas o un degradado que respira harian
+# que la pantalla no se considerase nunca quieta y no se leyera jamas.
+#   change_tolerance -> cuanto puede variar el brillo de un bloque (0-255)
+#   change_blocks    -> cuantos bloques deben cambiar para que sea pantalla nueva
+# Si no reacciona a los dialogos: baja los dos.
+# Si relee sin parar con el fondo animado: sube change_tolerance.
+change_tolerance = 10
+change_blocks = 4
+
+# Multiplicador de tamano antes del OCR. Con texto pequeno o pixel-art, 2 o 3
+# mejora muchisimo el acierto. 1 lo desactiva.
+upscale = 2
+
+# Que se le hace a la imagen antes del OCR:
+#   "off"      -> nada
+#   "invert"   -> invierte colores (texto claro sobre caja oscura)
+#   "binarize" -> blanco y negro puro; brutal con pixel-art, malo con fuentes suaves
+#   "auto"     -> invierte solo si la region es oscura  (recomendado)
+preprocess = "auto"
+binarize_threshold = 128
+
+[ocr]
+# Etiqueta de idioma. Tiene que estar instalado en Windows: comprueba con
+# `hakoyaku langs`. Ejemplos: "ja", "zh-Hans", "ko", "en".
+language = "ja"
+
+# Minimo de caracteres visibles para molestarse en traducir. Sube esto si se te
+# dispara con numeritos del HUD.
+min_chars = 4
+
+# Ignorar cualquier lectura que no lleve ningun caracter japones/chino/coreano.
+# Ponlo a false si el idioma de origen usa alfabeto latino.
+require_cjk = true
+
+[translate]
+# "deepl" | "google" | "libre" | "openai" | "none"
+#   deepl  -> el que mejor sale con japones. Plan gratuito de 500k caracteres/mes.
+#   google -> Cloud Translation v2, con clave de API.
+#   libre  -> LibreTranslate, gratis y offline si lo levantas tu en Docker.
+#   openai -> cualquier API estilo OpenAI: Ollama, LM Studio, OpenAI...
+#             Es el que mejor capta el tono de un dialogo, pero va mas lento.
+#   none   -> no traduce, solo ensena lo que ha leido el OCR. Para depurar.
+backend = "deepl"
+
+source_lang = "ja"
+target_lang = "es"
+
+# Mejor que dejarla aqui: exportar la variable de entorno HAKOYAKU_API_KEY,
+# que tiene prioridad sobre este campo. Asi no se te cuela en un commit.
+api_key = ""
+
+# Solo para "libre" y "openai". Vacio = valor por defecto del backend
+# (localhost:5000 y localhost:11434 respectivamente).
+endpoint = ""
+
+# Solo para "openai".
+model = "qwen2.5:7b"
+
+# Frases distintas que se recuerdan para no pagar dos veces por la misma.
+cache_size = 500
+timeout_secs = 12
+
+[overlay]
+# Como se ensena la traduccion:
+#   "inplace" -> ENCIMA del texto original, tapandolo y del color de la caja
+#                del juego. Parece que el juego esta traducido.  (por defecto)
+#   "panel"   -> en un recuadro aparte, al lado de la region.
+mode = "inplace"
+
+# Que se tapa:
+#   "box"  -> la bandeja de dialogo entera. Parece que el juego esta traducido,
+#             y deja sitio de sobra para la frase.  (por defecto)
+#   "text" -> solo el rectangulo que ocupaban las letras.
+inplace_cover = "box"
+
+# Pixeles que se anaden por cada lado al parche (solo con inplace_cover="text").
+# Subelo si asoman restos de las letras japonesas por los bordes.
+inplace_padding = 4
+
+# Color del parche. "auto" toma el color dominante de la propia caja del juego,
+# que es lo que hace que no se note el remiendo. Tambien acepta #RRGGBB.
+inplace_background = "auto"
+
+# La letra se encoge sola hasta que la frase quepa en el hueco (el castellano
+# ocupa mas que el japones). Este es el limite: por debajo no baja.
+min_font_size = 11
+
+# --- lo que sigue solo se usa con mode = "panel" ---
+
+# Donde se coloca el recuadro respecto a la region vigilada:
+# "auto" | "right" | "left" | "above" | "below" | "custom"
+# "auto" prueba derecha, arriba, abajo e izquierda, y se queda con la primera
+# que quepa entera en pantalla.
+position = "auto"
+
+# Solo se usan con position = "custom".
+x = 0
+y = 0
+
+width = 520
+height = 220
+margin = 12
+
+# Cualquier fuente instalada. Para que se vea tambien el original japones,
+# usa una que tenga kanji: "Yu Gothic UI", "Meiryo UI", "MS Gothic".
+font = "Yu Gothic UI"
+font_size = 20
+
+# 0 invisible, 255 opaco.
+opacity = 235
+
+text_color = "#F2F2F2"
+background_color = "#12121A"
+
+# Ensenar tambien el texto original encima de la traduccion.
+# Util para aprender japones; molesto si solo quieres jugar.
+show_original = false
+
+# Dibujar un marco de color alrededor de la region vigilada, por encima del
+# juego. Es la unica forma de ver de un vistazo si esta mirando donde debe.
+# Cuando ya lo tengas ajustado, ponlo a false y desaparece.
+show_region = true
+region_color = "#FF8A3D"
+region_thickness = 2
+
+# Lo que pone el recuadro mientras no hay nada que traducir. Es la senal de
+# vida: si lo ves, el programa esta corriendo y esperando texto.
+idle_text = "hakoyaku · esperando texto…"
